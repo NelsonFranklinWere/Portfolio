@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://nelsonw.dev/sitemap.xml 
