@@ -1,4 +1,662 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // ===========================================
+    // COMPREHENSIVE ANALYTICS TRACKING SYSTEM
+    // ===========================================
+    
+    // Analytics Configuration
+    const analyticsConfig = {
+        // Replace with your actual Google Analytics 4 Measurement ID
+        ga4MeasurementId: 'G-XXXXXXXXXX', // Update this with your GA4 ID
+        debug: true,
+        trackScrollDepth: true,
+        trackClicks: true,
+        trackTimeOnPage: true,
+        trackExitIntent: true,
+        trackFormInteractions: true,
+        trackSocialClicks: true,
+        trackDownloads: true,
+        trackOutboundLinks: true,
+        trackVideoEngagement: true,
+        trackHeatmap: true
+    };
+    
+    // Analytics Data Storage
+    let analyticsData = {
+        pageLoadTime: Date.now(),
+        scrollDepth: 0,
+        maxScrollDepth: 0,
+        scrollEvents: 0,
+        clickEvents: 0,
+        timeOnPage: 0,
+        sectionsViewed: new Set(),
+        exitIntentTriggered: false,
+        userInteractions: [],
+        sessionId: generateSessionId(),
+        isReturningUser: checkReturningUser(),
+        userRetention: {
+            firstVisit: Date.now(),
+            visitCount: getVisitCount(),
+            lastVisit: getLastVisit(),
+            sessionDuration: 0,
+            pagesViewed: 1,
+            engagementScore: 0
+        }
+    };
+    
+    // Generate unique session ID
+    function generateSessionId() {
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // Check if user is returning
+    function checkReturningUser() {
+        const lastVisit = localStorage.getItem('lastVisit');
+        const now = Date.now();
+        const oneDay = 24 * 60 * 60 * 1000;
+        
+        if (!lastVisit) {
+            localStorage.setItem('firstVisit', now);
+            return false;
+        }
+        
+        return (now - parseInt(lastVisit)) < oneDay;
+    }
+    
+    // Get visit count
+    function getVisitCount() {
+        const count = localStorage.getItem('visitCount') || 0;
+        const newCount = parseInt(count) + 1;
+        localStorage.setItem('visitCount', newCount);
+        return newCount;
+    }
+    
+    // Get last visit time
+    function getLastVisit() {
+        const lastVisit = localStorage.getItem('lastVisit');
+        const now = Date.now();
+        localStorage.setItem('lastVisit', now);
+        return lastVisit ? parseInt(lastVisit) : null;
+    }
+    
+    // Initialize Google Analytics 4
+    function initializeGA4() {
+        if (analyticsConfig.ga4MeasurementId && analyticsConfig.ga4MeasurementId !== 'G-XXXXXXXXXX') {
+            // Load Google Analytics 4
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = `https://www.googletagmanager.com/gtag/js?id=${analyticsConfig.ga4MeasurementId}`;
+            document.head.appendChild(script);
+            
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', analyticsConfig.ga4MeasurementId, {
+                page_title: document.title,
+                page_location: window.location.href,
+                custom_map: {
+                    'custom_parameter_1': 'user_engagement_score'
+                }
+            });
+            
+            window.gtag = gtag;
+            console.log('Google Analytics 4 initialized');
+        }
+    }
+    
+    // Track Custom Events to Google Analytics
+    function trackEvent(eventName, parameters = {}) {
+        analyticsData.userInteractions.push({
+            event: eventName,
+            timestamp: Date.now(),
+            parameters: parameters
+        });
+        
+        if (window.gtag) {
+            gtag('event', eventName, {
+                event_category: parameters.category || 'User Interaction',
+                event_label: parameters.label || eventName,
+                value: parameters.value || 1,
+                custom_parameter_1: calculateEngagementScore(),
+                ...parameters
+            });
+        }
+        
+        if (analyticsConfig.debug) {
+            console.log('Analytics Event:', eventName, parameters);
+        }
+    }
+    
+    // Calculate User Engagement Score
+    function calculateEngagementScore() {
+        let score = 0;
+        score += analyticsData.scrollEvents * 2;
+        score += analyticsData.clickEvents * 5;
+        score += analyticsData.sectionsViewed.size * 10;
+        score += Math.min(analyticsData.timeOnPage / 1000, 300); // Max 300 points for time
+        return Math.round(score);
+    }
+    
+    // Track Scroll Depth
+    function trackScrollDepth() {
+        if (!analyticsConfig.trackScrollDepth) return;
+        
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+                
+                analyticsData.scrollDepth = scrollPercent;
+                analyticsData.scrollEvents++;
+                
+                if (scrollPercent > analyticsData.maxScrollDepth) {
+                    analyticsData.maxScrollDepth = scrollPercent;
+                    
+                    // Track scroll milestones
+                    if (scrollPercent >= 25 && !analyticsData.sectionsViewed.has('25%')) {
+                        analyticsData.sectionsViewed.add('25%');
+                        trackEvent('scroll_depth_25', {
+                            category: 'Engagement',
+                            label: '25% Scroll Depth'
+                        });
+                    }
+                    if (scrollPercent >= 50 && !analyticsData.sectionsViewed.has('50%')) {
+                        analyticsData.sectionsViewed.add('50%');
+                        trackEvent('scroll_depth_50', {
+                            category: 'Engagement',
+                            label: '50% Scroll Depth'
+                        });
+                    }
+                    if (scrollPercent >= 75 && !analyticsData.sectionsViewed.has('75%')) {
+                        analyticsData.sectionsViewed.add('75%');
+                        trackEvent('scroll_depth_75', {
+                            category: 'Engagement',
+                            label: '75% Scroll Depth'
+                        });
+                    }
+                    if (scrollPercent >= 90 && !analyticsData.sectionsViewed.has('90%')) {
+                        analyticsData.sectionsViewed.add('90%');
+                        trackEvent('scroll_depth_90', {
+                            category: 'Engagement',
+                            label: '90% Scroll Depth'
+                        });
+                    }
+                }
+                
+                // Track section views
+                const sections = document.querySelectorAll('section[id]');
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                        const sectionId = section.id;
+                        if (!analyticsData.sectionsViewed.has(sectionId)) {
+                            analyticsData.sectionsViewed.add(sectionId);
+                            trackEvent('section_view', {
+                                category: 'Navigation',
+                                label: sectionId,
+                                section_name: sectionId
+                            });
+                        }
+                    }
+                });
+            }, 150);
+        });
+    }
+    
+    // Track All Clicks
+    function trackClicks() {
+        if (!analyticsConfig.trackClicks) return;
+        
+        document.addEventListener('click', (event) => {
+            analyticsData.clickEvents++;
+            
+            const target = event.target;
+            const tagName = target.tagName.toLowerCase();
+            let clickData = {
+                category: 'User Interaction',
+                element_type: tagName,
+                timestamp: Date.now()
+            };
+            
+            // Track specific elements
+            if (target.classList.contains('nav-link')) {
+                clickData.category = 'Navigation';
+                clickData.label = target.textContent.trim();
+                clickData.destination = target.getAttribute('href');
+                trackEvent('nav_click', clickData);
+            } else if (target.classList.contains('btn')) {
+                clickData.category = 'CTA';
+                clickData.label = target.textContent.trim();
+                clickData.button_type = target.classList.contains('btn-primary') ? 'primary' : 
+                                      target.classList.contains('btn-secondary') ? 'secondary' : 'cv';
+                trackEvent('button_click', clickData);
+            } else if (tagName === 'a') {
+                clickData.category = 'Link';
+                clickData.label = target.textContent.trim();
+                clickData.url = target.href;
+                
+                // Track outbound links
+                if (target.href && !target.href.includes(window.location.hostname)) {
+                    trackEvent('outbound_link_click', {
+                        ...clickData,
+                        category: 'Outbound Link',
+                        destination: target.href
+                    });
+                } else {
+                    trackEvent('link_click', clickData);
+                }
+            } else if (target.classList.contains('social-link')) {
+                clickData.category = 'Social';
+                clickData.label = target.querySelector('i').className;
+                trackEvent('social_click', clickData);
+            } else if (target.hasAttribute('download')) {
+                clickData.category = 'Download';
+                clickData.label = target.getAttribute('download') || target.textContent.trim();
+                trackEvent('file_download', clickData);
+            } else {
+                clickData.category = 'General';
+                clickData.label = `${tagName} click`;
+                trackEvent('general_click', clickData);
+            }
+        });
+    }
+    
+    // Track Form Interactions
+    function trackFormInteractions() {
+        if (!analyticsConfig.trackFormInteractions) return;
+        
+        // Track form field interactions
+        document.addEventListener('focus', (event) => {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                trackEvent('form_field_focus', {
+                    category: 'Form Interaction',
+                    label: event.target.name || event.target.placeholder,
+                    field_type: event.target.type || 'textarea'
+                });
+            }
+        });
+        
+        // Track form submissions
+        document.addEventListener('submit', (event) => {
+            const form = event.target;
+            if (form.tagName === 'FORM') {
+                trackEvent('form_submit', {
+                    category: 'Form Interaction',
+                    label: form.id || 'contact_form',
+                    form_action: form.action
+                });
+            }
+        });
+        
+        // Track form validation errors
+        document.addEventListener('invalid', (event) => {
+            trackEvent('form_validation_error', {
+                category: 'Form Interaction',
+                label: event.target.name || event.target.placeholder,
+                field_type: event.target.type
+            });
+        });
+    }
+    
+    // Track Social Media Clicks
+    function trackSocialClicks() {
+        if (!analyticsConfig.trackSocialClicks) return;
+        
+        const socialLinks = document.querySelectorAll('a[href*="github.com"], a[href*="linkedin.com"], a[href*="twitter.com"], a[href*="facebook.com"], a[href*="whatsapp.com"]');
+        
+        socialLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const platform = link.href.includes('github.com') ? 'GitHub' :
+                                link.href.includes('linkedin.com') ? 'LinkedIn' :
+                                link.href.includes('twitter.com') ? 'Twitter' :
+                                link.href.includes('facebook.com') ? 'Facebook' :
+                                link.href.includes('whatsapp.com') ? 'WhatsApp' : 'Unknown';
+                
+                trackEvent('social_media_click', {
+                    category: 'Social Media',
+                    label: platform,
+                    platform: platform,
+                    url: link.href
+                });
+            });
+        });
+    }
+    
+    // Track File Downloads
+    function trackDownloads() {
+        if (!analyticsConfig.trackDownloads) return;
+        
+        const downloadLinks = document.querySelectorAll('a[download], a[href$=".pdf"], a[href$=".doc"], a[href$=".docx"]');
+        
+        downloadLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const fileName = link.getAttribute('download') || link.href.split('/').pop();
+                const fileType = fileName.split('.').pop().toLowerCase();
+                
+                trackEvent('file_download', {
+                    category: 'Download',
+                    label: fileName,
+                    file_type: fileType,
+                    file_name: fileName
+                });
+            });
+        });
+    }
+    
+    // Track Time on Page
+    function trackTimeOnPage() {
+        if (!analyticsConfig.trackTimeOnPage) return;
+        
+        setInterval(() => {
+            analyticsData.timeOnPage = Date.now() - analyticsData.pageLoadTime;
+            
+            // Track time milestones
+            const seconds = Math.floor(analyticsData.timeOnPage / 1000);
+            if (seconds === 30 && !analyticsData.sectionsViewed.has('30s')) {
+                analyticsData.sectionsViewed.add('30s');
+                trackEvent('time_on_page_30s', {
+                    category: 'Engagement',
+                    label: '30 seconds on page'
+                });
+            }
+            if (seconds === 60 && !analyticsData.sectionsViewed.has('60s')) {
+                analyticsData.sectionsViewed.add('60s');
+                trackEvent('time_on_page_60s', {
+                    category: 'Engagement',
+                    label: '1 minute on page'
+                });
+            }
+            if (seconds === 120 && !analyticsData.sectionsViewed.has('120s')) {
+                analyticsData.sectionsViewed.add('120s');
+                trackEvent('time_on_page_2m', {
+                    category: 'Engagement',
+                    label: '2 minutes on page'
+                });
+            }
+        }, 1000);
+    }
+    
+    // Exit Intent Detection
+    function trackExitIntent() {
+        if (!analyticsConfig.trackExitIntent) return;
+        
+        let exitIntentTriggered = false;
+        
+        document.addEventListener('mouseleave', (event) => {
+            if (event.clientY <= 0 && !exitIntentTriggered) {
+                exitIntentTriggered = true;
+                analyticsData.exitIntentTriggered = true;
+                
+                // Show exit intent popup
+                showExitIntentPopup();
+                
+                trackEvent('exit_intent', {
+                    category: 'Engagement',
+                    label: 'User attempted to leave',
+                    time_on_page: analyticsData.timeOnPage,
+                    scroll_depth: analyticsData.maxScrollDepth,
+                    engagement_score: calculateEngagementScore()
+                });
+            }
+        });
+        
+        // Track page unload
+        window.addEventListener('beforeunload', (event) => {
+            trackEvent('page_unload', {
+                category: 'Engagement',
+                label: 'User leaving page',
+                time_on_page: analyticsData.timeOnPage,
+                scroll_depth: analyticsData.maxScrollDepth,
+                click_events: analyticsData.clickEvents,
+                scroll_events: analyticsData.scrollEvents,
+                sections_viewed: analyticsData.sectionsViewed.size,
+                engagement_score: calculateEngagementScore()
+            });
+            
+            // Send final analytics data
+            sendAnalyticsData();
+        });
+    }
+    
+    // Exit Intent Popup
+    function showExitIntentPopup() {
+        const popup = document.createElement('div');
+        popup.className = 'exit-intent-popup';
+        popup.innerHTML = `
+            <div class="exit-popup-content">
+                <div class="exit-popup-header">
+                    <h3>Wait! Don't Go Yet! 🚀</h3>
+                    <button class="exit-popup-close">&times;</button>
+                </div>
+                <div class="exit-popup-body">
+                    <p>Did you find what you were looking for?</p>
+                    <p>I'd love to help you with your next project or answer any questions!</p>
+                    <div class="exit-popup-buttons">
+                        <button class="btn btn-primary exit-stay-btn">Stay & Explore</button>
+                        <a href="#contact" class="btn btn-secondary exit-contact-btn">Get In Touch</a>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(popup);
+        
+        // Close popup handlers
+        popup.querySelector('.exit-popup-close').addEventListener('click', () => {
+            popup.remove();
+        });
+        
+        popup.querySelector('.exit-stay-btn').addEventListener('click', () => {
+            trackEvent('exit_intent_stay', {
+                category: 'Engagement',
+                label: 'User chose to stay'
+            });
+            popup.remove();
+        });
+        
+        popup.querySelector('.exit-contact-btn').addEventListener('click', () => {
+            trackEvent('exit_intent_contact', {
+                category: 'Engagement',
+                label: 'User chose to contact'
+            });
+            popup.remove();
+        });
+        
+        // Auto-remove after 10 seconds
+        setTimeout(() => {
+            if (popup.parentNode) {
+                popup.remove();
+            }
+        }, 10000);
+    }
+    
+    // Send Analytics Data to Server (if you have a backend)
+    function sendAnalyticsData() {
+        const data = {
+            ...analyticsData,
+            userAgent: navigator.userAgent,
+            screenResolution: `${screen.width}x${screen.height}`,
+            viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+            referrer: document.referrer,
+            timestamp: new Date().toISOString()
+        };
+        
+        // You can send this data to your own analytics endpoint
+        if (analyticsConfig.debug) {
+            console.log('Final Analytics Data:', data);
+        }
+        
+        // Send to Google Analytics as custom event
+        if (window.gtag) {
+            gtag('event', 'page_analytics_summary', {
+                event_category: 'Analytics',
+                event_label: 'Complete session data',
+                custom_parameter_1: data.engagement_score,
+                custom_parameter_2: data.time_on_page,
+                custom_parameter_3: data.max_scroll_depth,
+                custom_parameter_4: data.click_events,
+                custom_parameter_5: data.scroll_events
+            });
+        }
+    }
+    
+    // Initialize Analytics
+    function initializeAnalytics() {
+        initializeGA4();
+        trackScrollDepth();
+        trackClicks();
+        trackTimeOnPage();
+        trackExitIntent();
+        trackFormInteractions();
+        trackSocialClicks();
+        trackDownloads();
+        
+        // Track user retention metrics
+        trackUserRetention();
+        
+        // Track page load with enhanced data
+        trackEvent('page_load', {
+            category: 'Navigation',
+            label: 'Page loaded',
+            page_title: document.title,
+            page_url: window.location.href,
+            session_id: analyticsData.sessionId,
+            is_returning_user: analyticsData.isReturningUser,
+            visit_count: analyticsData.userRetention.visitCount,
+            user_agent: navigator.userAgent,
+            screen_resolution: `${screen.width}x${screen.height}`,
+            viewport_size: `${window.innerWidth}x${window.innerHeight}`,
+            referrer: document.referrer
+        });
+        
+        // Track returning user
+        if (analyticsData.isReturningUser) {
+            trackEvent('returning_user', {
+                category: 'User Retention',
+                label: 'Returning visitor',
+                visit_count: analyticsData.userRetention.visitCount,
+                days_since_last_visit: analyticsData.userRetention.lastVisit ? 
+                    Math.floor((Date.now() - analyticsData.userRetention.lastVisit) / (24 * 60 * 60 * 1000)) : 0
+            });
+        } else {
+            trackEvent('new_user', {
+                category: 'User Retention',
+                label: 'First-time visitor'
+            });
+        }
+        
+        console.log('Analytics system initialized with comprehensive tracking');
+        
+        // Add debug panel if in debug mode
+        if (analyticsConfig.debug) {
+            createDebugPanel();
+        }
+    }
+    
+    // Create Debug Panel for Analytics
+    function createDebugPanel() {
+        const debugPanel = document.createElement('div');
+        debugPanel.className = 'analytics-debug-panel';
+        debugPanel.innerHTML = `
+            <h4>Analytics Debug</h4>
+            <div class="debug-item">
+                <span class="debug-label">Session ID:</span>
+                <span class="debug-value">${analyticsData.sessionId.substring(0, 15)}...</span>
+            </div>
+            <div class="debug-item">
+                <span class="debug-label">User Type:</span>
+                <span class="debug-value">${analyticsData.isReturningUser ? 'Returning' : 'New'}</span>
+            </div>
+            <div class="debug-item">
+                <span class="debug-label">Visit Count:</span>
+                <span class="debug-value">${analyticsData.userRetention.visitCount}</span>
+            </div>
+            <div class="debug-item">
+                <span class="debug-label">Scroll Depth:</span>
+                <span class="debug-value">${analyticsData.maxScrollDepth}%</span>
+            </div>
+            <div class="debug-item">
+                <span class="debug-label">Clicks:</span>
+                <span class="debug-value">${analyticsData.clickEvents}</span>
+            </div>
+            <div class="debug-item">
+                <span class="debug-label">Engagement:</span>
+                <span class="debug-value">${calculateEngagementScore()}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(debugPanel);
+        debugPanel.classList.add('show');
+        
+        // Update debug panel every 5 seconds
+        setInterval(() => {
+            debugPanel.innerHTML = `
+                <h4>Analytics Debug</h4>
+                <div class="debug-item">
+                    <span class="debug-label">Session ID:</span>
+                    <span class="debug-value">${analyticsData.sessionId.substring(0, 15)}...</span>
+                </div>
+                <div class="debug-item">
+                    <span class="debug-label">User Type:</span>
+                    <span class="debug-value">${analyticsData.isReturningUser ? 'Returning' : 'New'}</span>
+                </div>
+                <div class="debug-item">
+                    <span class="debug-label">Visit Count:</span>
+                    <span class="debug-value">${analyticsData.userRetention.visitCount}</span>
+                </div>
+                <div class="debug-item">
+                    <span class="debug-label">Scroll Depth:</span>
+                    <span class="debug-value">${analyticsData.maxScrollDepth}%</span>
+                </div>
+                <div class="debug-item">
+                    <span class="debug-label">Clicks:</span>
+                    <span class="debug-value">${analyticsData.clickEvents}</span>
+                </div>
+                <div class="debug-item">
+                    <span class="debug-label">Engagement:</span>
+                    <span class="debug-value">${calculateEngagementScore()}</span>
+                </div>
+                <div class="debug-item">
+                    <span class="debug-label">Time on Page:</span>
+                    <span class="debug-value">${Math.floor(analyticsData.timeOnPage / 1000)}s</span>
+                </div>
+            `;
+        }, 5000);
+    }
+    
+    // Track User Retention
+    function trackUserRetention() {
+        // Track session duration
+        setInterval(() => {
+            analyticsData.userRetention.sessionDuration = Date.now() - analyticsData.pageLoadTime;
+            analyticsData.userRetention.engagementScore = calculateEngagementScore();
+            
+            // Track session milestones
+            const sessionMinutes = Math.floor(analyticsData.userRetention.sessionDuration / 60000);
+            if (sessionMinutes === 1 && !analyticsData.sectionsViewed.has('1min')) {
+                analyticsData.sectionsViewed.add('1min');
+                trackEvent('session_1min', {
+                    category: 'User Retention',
+                    label: '1 minute session',
+                    engagement_score: analyticsData.userRetention.engagementScore
+                });
+            }
+            if (sessionMinutes === 5 && !analyticsData.sectionsViewed.has('5min')) {
+                analyticsData.sectionsViewed.add('5min');
+                trackEvent('session_5min', {
+                    category: 'User Retention',
+                    label: '5 minute session',
+                    engagement_score: analyticsData.userRetention.engagementScore
+                });
+            }
+        }, 60000); // Check every minute
+    }
+    
+    // Start Analytics
+    initializeAnalytics();
+    
     // Loading Screen
     const loadingScreen = document.getElementById('loading-screen');
     
