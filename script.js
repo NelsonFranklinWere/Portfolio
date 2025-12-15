@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const analyticsConfig = {
         // Replace with your actual Google Analytics 4 Measurement ID
         ga4MeasurementId: 'G-XXXXXXXXXX', // Update this with your GA4 ID
-        debug: true,
+        debug: false, // Set to false to hide debug panel (analytics still works)
         trackScrollDepth: true,
         trackClicks: true,
         trackTimeOnPage: true,
@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        // Analytics events are tracked but not logged to console when debug is false
         if (analyticsConfig.debug) {
             console.log('Analytics Event:', eventName, parameters);
         }
@@ -695,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Typing Animation
     const typingText = document.getElementById('typing-text');
-    const texts = ['Software Engineer', 'Co-founder of Strive Go Tech', 'Brand Building Expert', 'Lead Generation Specialist', 'Business Automation Expert'];
+    const texts = ['Web Developer in Nairobi', 'Software Engineer in Nairobi', 'Full Stack Developer', 'Experienced Web Developer', 'Software Engineer Nairobi', 'Co-founder of Strive Go Tech', 'Brand Building Expert', 'Lead Generation Specialist', 'Business Automation Expert'];
     let textIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -1116,6 +1117,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Auto-slide testimonials
     setInterval(nextSlide, 5000);
+
+    // FAQ Accordion Functionality
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            
+            // Close all FAQ items
+            faqItems.forEach(faqItem => {
+                faqItem.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                item.classList.add('active');
+                
+                // Track FAQ interaction
+                trackEvent('faq_open', {
+                    category: 'Engagement',
+                    label: question.textContent.trim()
+                });
+            }
+        });
+    });
 
     // Animated Skill Bars
     const skillBars = document.querySelectorAll('.skill-progress');

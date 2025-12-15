@@ -1,3 +1,11 @@
 User-agent: *
 Allow: /
-Sitemap: https://nelsonw.dev/sitemap.xml 
+Sitemap: https://nelson.strivego.online/sitemap.xml
+
+# Crawl-delay
+User-agent: *
+Crawl-delay: 1
+
+# Disallow admin and private areas (if any)
+Disallow: /admin/
+Disallow: /private/ 
