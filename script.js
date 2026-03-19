@@ -696,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Typing Animation
     const typingText = document.getElementById('typing-text');
-    const texts = ['Web Developer in Nairobi', 'Software Engineer in Nairobi', 'Full Stack Developer', 'Experienced Web Developer', 'Software Engineer Nairobi', 'Co-founder of Strive Go Tech', 'Brand Building Expert', 'Lead Generation Specialist', 'Business Automation Expert'];
+    const texts = ['Systems Engineer in Nairobi', 'Software Engineer in Nairobi', 'Full Stack Developer', 'Experienced Systems Engineer', 'Software Engineer Nairobi', 'Founder, OptioHire.com', 'AI & Automation Specialist', 'Lead Generation Specialist', 'Business Automation Expert'];
     let textIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -994,7 +994,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
 
                 // Send form data to FormSubmit AJAX endpoint
-                const response = await fetch('https://formsubmit.co/ajax/solutionsnelson@gmail.com', {
+                const response = await fetch('https://formsubmit.co/ajax/nelsonochieng516@gmail.com', {
                     method: 'POST',
                     body: formData
                 });
