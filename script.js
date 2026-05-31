@@ -670,33 +670,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     loadingScreen.style.display = 'none';
                 }, 500);
             }
-        }, 2000); // Show loading for 2 seconds
+        }, 900);
     });
 
-    // Initialize Particles.js
-    if (typeof particlesJS !== 'undefined') {
-        particlesJS('particles-js', {
-            particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
-                color: { value: '#2563eb' },
-                shape: { type: 'circle' },
-                opacity: { value: 0.5, random: false },
-                size: { value: 3, random: true },
-                line_linked: { enable: true, distance: 150, color: '#2563eb', opacity: 0.4, width: 1 },
-                move: { enable: true, speed: 6, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
-            },
-            interactivity: {
-                detect_on: 'canvas',
-                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
-                modes: { grab: { distance: 400, line_linked: { opacity: 1 } }, bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 }, repulse: { distance: 200, duration: 0.4 }, push: { particles_nb: 4 }, remove: { particles_nb: 2 } }
-            },
-            retina_detect: true
-        });
-    }
+    // Particles disabled for clean professional presentation (hidden via executive-theme.css)
 
     // Typing Animation
     const typingText = document.getElementById('typing-text');
-    const texts = ['Systems Engineer in Nairobi', 'Software Engineer in Nairobi', 'Full Stack Developer', 'Experienced Systems Engineer', 'Software Engineer Nairobi', 'Founder, OptioHire.com', 'AI & Automation Specialist', 'Lead Generation Specialist', 'Business Automation Expert'];
+    const texts = ['Founder, OptioHire', 'Director, Cres Dynamics', 'ERP & Business Operating Systems', 'AI & Enterprise Automation', 'Finance & Revenue Infrastructure', 'Technology Executive — Nairobi'];
     let textIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -1167,7 +1148,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeProjects() {
         projectItems.forEach(item => {
             const category = item.getAttribute('data-category');
-            if (category === 'web') {
+            if (category && category.split(/\s+/).includes('enterprise')) {
                 item.classList.remove('hidden');
             } else {
                 item.classList.add('hidden');
@@ -1192,7 +1173,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Show all projects when "All Projects" is selected
                     item.classList.remove('hidden');
                     item.style.animation = 'fadeInUp 0.5s ease-out';
-                } else if (item.getAttribute('data-category') === filterValue) {
+                } else if (item.getAttribute('data-category').split(/\s+/).includes(filterValue)) {
                     // Show only projects matching the selected category
                     item.classList.remove('hidden');
                     item.style.animation = 'fadeInUp 0.5s ease-out';
@@ -1244,9 +1225,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     twitterLinks.forEach(link => {
-        link.href = 'https://www.facebook.com/profile.php?id=100089972558754';
-    })
-     facebookLinks.forEach(link => {
         link.href = 'https://www.facebook.com/profile.php?id=100089972558754';
     });
 });
