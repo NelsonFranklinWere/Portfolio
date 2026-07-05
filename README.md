@@ -1,18 +1,14 @@
 # Nelson Franklin Were
 
-**Systems Engineer · Founder · Director** — Nairobi, Kenya
+**Official portfolio** — [nelson.strivego.online](https://nelson.strivego.online)
 
-Building the digital infrastructure African businesses run on.
+## Pages (SEO)
 
-- **Founder**, [OptioHire](https://optiohire.com) — AI-powered talent acquisition
-- **Director**, [Cres Dynamics Ltd](https://cresdynamics.com) — custom ERP, finance, and automation systems
+- [About](about.html) — Personal story, Director Cres Dynamics, founder OptioHire
+- [Projects](projects.html) — Shipped systems and websites
+- [Expertise](expertise.html) — Technical capabilities, Director Cres Dynamics
 
 ## Contact
 
 - +254 743 869 564 · +254 708 805 496
 - nelsonochieng516@gmail.com · info@cresdynamics.com
-- [GitHub](https://github.com/nelsonfranklinwere) · [LinkedIn](https://www.linkedin.com/in/nelson-w-a557272b4/)
-
-## Portfolio
-
-Live site: [nelson.strivego.online](https://nelson.strivego.online)
