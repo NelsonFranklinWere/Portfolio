@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Typing Animation
     const typingText = document.getElementById('typing-text');
-    const texts = ['Founder, OptioHire', 'Director, Cres Dynamics', 'ERP & Business Operating Systems', 'AI & Enterprise Automation', 'Finance & Revenue Infrastructure', 'Technology Executive — Nairobi'];
+    const texts = ['Executive director, OptioHire', 'Director, Cres Dynamics', 'ERP & Business Operating Systems', 'AI & Enterprise Automation', 'Finance & Revenue Infrastructure', 'Technology Executive — Nairobi'];
     let textIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -975,7 +975,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
 
                 // Send form data to FormSubmit AJAX endpoint
-                const response = await fetch('https://formsubmit.co/ajax/nelsonochieng516@gmail.com', {
+                const response = await fetch('https://formsubmit.co/ajax/nelsonochieng_w@icloud.com', {
                     method: 'POST',
                     body: formData
                 });

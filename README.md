@@ -1,14 +1,14 @@
-# Nelson Franklin Were
+# Nelson Ochieng Were
 
 **Official portfolio** — [nelson.strivego.online](https://nelson.strivego.online)
 
 ## Pages (SEO)
 
-- [About](about.html) — Personal story, Director Cres Dynamics, founder OptioHire
+- [About](about.html) — Personal story, Director Cres Dynamics, Executive director OptioHire
 - [Projects](projects.html) — Shipped systems and websites
 - [Expertise](expertise.html) — Technical capabilities, Director Cres Dynamics
 
 ## Contact
 
 - +254 743 869 564 · +254 708 805 496
-- nelsonochieng516@gmail.com · info@cresdynamics.com
+- nelsonochieng_w@icloud.com · info@cresdynamics.com
